@@ -504,7 +504,7 @@ tbody tr:hover td {
 
 /* Knockout Bracket Styles (Complex Flow - Final version) */
 .knockout-bracket-container {
-    width: 90%;
+    width: 100%;
     max-width: 1200px;
     margin-top: 2rem;
     padding: 2.5rem 2rem;
@@ -525,9 +525,9 @@ tbody tr:hover td {
 /* Wrapper for Semi-finals and Final columns */
 .bracket-main-flow {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     /* Ensure top alignment of rounds */
-    justify-content: center;
+    /* justify-content: center; */
     gap: 40px;
     /* Gap between columns */
     position: relative;
@@ -706,7 +706,6 @@ tbody tr:hover td {
     transform: translateY(-50%);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .main-points-heading {
         font-size: 3rem;
@@ -734,6 +733,7 @@ tbody tr:hover td {
     /* Dropdowns */
     .dropdowns-container {
         flex-direction: column;
+        /* This remains column-wise for filters/dropdowns */
         gap: 1.5rem;
         margin-top: 0;
         margin-bottom: 3rem;
@@ -768,33 +768,44 @@ tbody tr:hover td {
         margin-bottom: 3rem;
     }
 
-    /* Mobile Knockout adjustments (Stack vertically) */
+    /* 👇 CRITICAL CHANGE: ROW-WISE for Knockout on small screens 👇 */
+    /* Knockout adjustments (Stack horizontally) */
     .knockout-bracket-container.complex-flow {
-        flex-direction: column;
+        flex-direction: row;
+        /* CHANGED to ROW for horizontal alignment */
         align-items: center;
-        padding: 20px;
+        /* You might need to adjust width/padding for the row layout to fit on small screens */
+        padding: 10px;
         min-height: auto;
+        overflow-x: auto;
+        /* IMPORTANT: Allows scrolling if the row is wider than the screen */
+        justify-content: flex-start;
+        /* Ensures content starts from the left */
     }
 
     .bracket-main-flow {
-        flex-direction: column;
-        gap: 20px;
-        padding-top: 0;
+        flex-direction: row;
+        /* CHANGED to ROW for horizontal alignment */
+        gap: 50px;
+        padding: 20px;
     }
 
     .bracket-round {
+        /* You might need to reduce the width of the rounds so they fit better in a row on mobile */
+        min-width: 150px;
+        flex-shrink: 0;
+        /* Prevents rounds from shrinking too much */
         margin: 0;
-        min-width: 90%;
     }
 
     .bracket-round.final-round {
         margin-top: 0;
-        /* Reset vertical alignment for mobile */
+        /* Reset */
     }
 
+    /* Connectors can be shown if needed for horizontal layout, but usually hidden on mobile */
     .bracket-connectors.spacer-area {
         display: none;
-        /* Hide complex connectors on mobile */
     }
 
     .bracket-connectors.spacer-area::before,
