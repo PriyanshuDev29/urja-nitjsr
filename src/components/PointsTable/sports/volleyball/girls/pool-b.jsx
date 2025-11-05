@@ -4,7 +4,7 @@ export const volleyballGirlsPoolB = {
   pointsTable: {
     headings: ["Team", "Pld", "W", "L", "Pts"],
     data: [
-      ["MME + ECE", 1, 1, 0, 1],
+      ["MME + ECE", 1, 0, 1, 0],
       ["EE + CSE", 1, 0, 1, 0],
     ],
   },
