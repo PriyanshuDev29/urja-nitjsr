@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./LeaderBoard.css";
-
+import Footer from '../Footer/Footer.jsx';
 // --- RAW DATA: totalPoints is now often 0 in the source, as it will be calculated ---
 const teamsData = [
   {
@@ -40,7 +40,7 @@ const teamsData = [
     totalPoints: 0, // Not Needed
     breakdown: {
       Athletics: 0,
-      Badminton: 7,
+      Badminton: 0,
       Carrom: 0,
       Chess: 0,
       Cricket: 0,
@@ -88,7 +88,7 @@ const teamsData = [
     totalPoints: 0, // Not Needed
     breakdown: {
       Athletics: 0,
-      Badminton: 5,
+      Badminton: 0,
       Carrom: 0,
       Chess: 0,
       Cricket: 0,
@@ -104,7 +104,7 @@ const teamsData = [
     totalPoints: 0, // Not Needed
     breakdown: {
       Athletics: 0,
-      Badminton: 10,
+      Badminton: 0,
       Carrom: 0,
       Chess: 0,
       Cricket: 0,
@@ -202,6 +202,7 @@ const LeaderBoard = () => {
   const showPodium = topThree.some((team) => team.totalPoints > 0);
 
   return (
+    <>
     <div className="leaderboard-page">
       {selectedTeam && (
         <>
@@ -295,7 +296,10 @@ const LeaderBoard = () => {
         </div>
       </div>
     </div>
+     <Footer/>
+  </>
   );
+  
 };
 
 export default LeaderBoard;

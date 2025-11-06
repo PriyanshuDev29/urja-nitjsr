@@ -1,66 +1,66 @@
-body {
+/* Global */
+* { box-sizing: border-box; }
+html, body {
   margin: 0;
+  padding: 0;
+  height: auto;              /* let the document grow */
+}
+body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden;
-  /* Remove incorrect path, use correct one */
-  /* Use a pseudo-element for opacity */
+
+  /* DO NOT lock scroll globally */
+  overflow-x: hidden;        /* allow vertical scroll, hide horizontal overflow only */
 }
 
+/* Optional: when mobile menu is open, JS toggles this class */
+body.no-scroll { overflow: hidden; }
+
+/* Background layer (non-interactive) */
+/* Put the image in /public and reference it as /urja-bg-1.png */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -1;
-  background: url('/public/urja-bg-1.png') no-repeat center center fixed;
-  background-size: cover;
+  z-index: -1;               /* sit behind everything */
+  background: url("/urja-bg-1.png") center center / cover no-repeat fixed;
   opacity: 0.87;
-  /* Reduce opacity */
   pointer-events: none;
 }
 
+/* Code font */
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+/* Title (avoid absolute unless you really need it) */
 .urja-title {
-  position: absolute;
-  /* Increase the top value to move the title below the navbar */
-  top: 100px;
-  left: 0;
+  /* If you truly want it below the fixed navbar, use margin-top instead of absolute positioning */
+  display: block;
   width: 100%;
   text-align: center;
-  font-size: 5rem;
+  margin-top: 100px;          /* clears the navbar */
+  font-size: clamp(2.2rem, 4vw, 5rem);
   font-family: 'Times New Roman', Times, serif;
   color: #fff;
-  text-shadow: 0 2px 16px #000, 0 0px 2px #ff3c00, 0 0px 2px #00cfff;
+  text-shadow: 0 2px 16px #000, 0 0 2px #ff3c00, 0 0 2px #00cfff;
   font-weight: bold;
   letter-spacing: 0.1em;
 }
 
-/* src/index.css or src/App.css */
-
-/*
-  The common class for all glowing main headings.
-  This allows us to reuse the same style without repeating code.
-*/
+/* Reusable glowing heading */
 .main-glowing-heading {
-  font-size: 5rem;
+  font-size: clamp(2rem, 6vw, 5rem);
   font-weight: 900;
   text-transform: uppercase;
   margin-bottom: 3rem;
   letter-spacing: 5px;
-  /* Add the base animation here */
   animation: headingGlow 2.5s ease-in-out infinite alternate;
 }
 
-/* Base keyframe animation for the glow effect */
+/* Glow animation */
 @keyframes headingGlow {
   from {
     text-shadow:
@@ -69,7 +69,6 @@ code {
       0 0 15px rgba(255, 68, 0, 0.3),
       0 0 20px rgba(0, 170, 255, 0.3);
   }
-
   to {
     text-shadow:
       0 0 8px #fff,
@@ -77,4 +76,9 @@ code {
       0 0 20px rgba(255, 68, 0, 0.5),
       0 0 25px rgba(0, 170, 255, 0.5);
   }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .main-glowing-heading { animation: none; }
 }
