@@ -1,6 +1,6 @@
 import React from 'react';
 import './Team.css';
-
+import Footer from '../Footer/Footer.jsx';  
 // Updated team data with one entry per person
 const supercoreTeamData = [
     {
@@ -157,6 +157,7 @@ const supercoreTeamData = [
 
 function Team() {
     return (
+        <>
         <div className="team-page-content">
             <h1 className="main-team-heading">URJA'26 SUPERCORE</h1>
             <div className="team-cards-container">
@@ -179,6 +180,8 @@ function Team() {
                 ))}
             </div>
         </div>
+        <Footer />
+        </> 
     );
 }
 

@@ -105,3 +105,27 @@ body.menu-open {
     transform: rotate(360deg);
   }
 }
+/* Ensure scrolling works globally */
+html {
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  min-height: 100%;
+}
+
+#root {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Remove any default constraints */
+* {
+  box-sizing: border-box;
+}

@@ -1,7 +1,7 @@
 //Gallery.js
 import React, { useState } from "react";
 import "./Gallery.css";
-
+import Footer from '../Footer/Footer.jsx';  
 // --- Image Data ---
 // Replace the `src` with your actual image paths.
 const galleryImages = [
@@ -101,6 +101,7 @@ export default function Gallery() {
 
 
     return (
+        <>
         <div className="gallery-container">
             <h1 className="gallery-title">Moments of URJA</h1>
             <div className="gallery-grid">
@@ -132,5 +133,7 @@ export default function Gallery() {
                 </div>
             )}
         </div>
+        <Footer />
+        </> 
     );
 }

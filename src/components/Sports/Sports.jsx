@@ -10,7 +10,7 @@ import FootballRules from '../Rulebook/Football.jsx';
 import LawnTennisRules from '../Rulebook/LawnTennis.jsx';
 import TableTennisRules from '../Rulebook/TableTennis.jsx';
 import VolleyballRules from '../Rulebook/Volleyball.jsx';
-
+import Footer from '../Footer/Footer.jsx';
 function Sports() {
     const [selectedSport, setSelectedSport] = useState('Athletics');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -82,6 +82,7 @@ function Sports() {
     const selectedSportData = sportsList.find(sport => sport.name === selectedSport);
 
     return (
+        <>
         <div className="sports-page-content">
             <h1 className="main-sports-heading">Sports</h1>
 
@@ -132,6 +133,8 @@ function Sports() {
                 {SelectedSportComponent ? <SelectedSportComponent /> : null}
             </div>
         </div>
+        <Footer />
+        </>
     );
 }
 

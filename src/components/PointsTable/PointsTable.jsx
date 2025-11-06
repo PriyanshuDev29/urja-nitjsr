@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './PointsTable.css';
-
+import Footer from '../Footer/Footer.jsx';
 // NOTE: Ensure your actual data files are in place in your project's file system 
 
 const sportsDataMap = {
@@ -115,7 +115,7 @@ function ScoreboardTable({ data }) {
         return 0;
     });
 
-    return (
+    return (<>
         <div className="scoreboard-table-container">
             <table>
                 <thead>
@@ -145,6 +145,8 @@ function ScoreboardTable({ data }) {
                 </tbody>
             </table>
         </div>
+
+    </>
     );
 }
 
@@ -527,7 +529,7 @@ function PointsTable() {
 
     // --- JSX Render ---
 
-    return (
+    return (<>
         <div className="points-table-page">
             <h1 className="main-points-heading">Points Table</h1>
 
@@ -628,6 +630,8 @@ function PointsTable() {
                 )}
             </div>
         </div>
+        <Footer/>
+        </>
     );
 }
 

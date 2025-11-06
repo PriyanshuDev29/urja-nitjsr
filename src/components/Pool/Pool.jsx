@@ -1,6 +1,6 @@
 import React from 'react';
 import './Pool.css';
-
+import Footer from '../Footer/Footer.jsx';
 // Reusable Table component (title prop removed, only handles the scrollable table)
 function PoolTable({ headings, data }) {
     return (
@@ -25,6 +25,7 @@ function PoolTable({ headings, data }) {
                 </tbody>
             </table>
         </div>
+       
     );
 }
 
@@ -45,6 +46,7 @@ function Pool() {
     ];
 
     return (
+        <>
         <div className="pool-page-content">
             <h1 className="main-pool-heading">Pool</h1>
             <div className="pool-container">
@@ -68,6 +70,8 @@ function Pool() {
                 </div>
             </div>
         </div>
+         <Footer/>
+        </>
     );
 }
 
