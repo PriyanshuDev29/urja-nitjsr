@@ -12,7 +12,7 @@ export const tableTennisBoysKnockout = {
         {
             name: "Final",
             matches: [
-                { id: 'F1', date: 'TBD', venue: 'LHC', team1: 'Winner SF1', score1: '', score1_pen: '', team2: 'Winner SF2', score2: '', score2_pen: '', winner: '' }
+                { id: 'F1', date: '6 Nov', venue: 'LHC', team1: 'EE', score1: '3', score1_pen: '', team2: 'CSE', score2: '1', score2_pen: '', winner: '' }
             ]
         }
     ],
@@ -20,7 +20,7 @@ export const tableTennisBoysKnockout = {
     thirdPlace: {
         name: "Third Place",
         match: {
-            id: 'TP1', date: 'TBD', venue: 'LHC', team1: 'Loser SF1', score1: '', team2: 'Loser SF2', score2: '', winner: ''
+            id: 'TP1', date: '6 Nov', venue: 'LHC', team1: 'ECE', score1: '1.5', team2: 'PG', score2: '2.5', winner: ''
         }
     }
 };
