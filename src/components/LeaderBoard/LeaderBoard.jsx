@@ -7,7 +7,7 @@ const teamsData = [
     name: "PIE+ECM",
     totalPoints: 0, // Not Needed
     breakdown: {
-      Athletics: 0,
+      Athletics: 3,
       Badminton: 5,
       Carrom: 2,
       Chess: 0,
@@ -39,7 +39,7 @@ const teamsData = [
     name: "ECE",
     totalPoints: 0, // Not Needed
     breakdown: {
-      Athletics: 5,
+      Athletics: 13,
       Badminton: 10.5,
       Carrom: 1,
       Chess: 5,
@@ -55,7 +55,7 @@ const teamsData = [
     name: "CE",
     totalPoints: 0, // Not Needed
     breakdown: {
-      Athletics: 18,
+      Athletics: 20,
       Badminton: 5,
       Carrom: 0,
       Chess: 0,
@@ -71,7 +71,7 @@ const teamsData = [
     name: "MME",
     totalPoints: 0, // Not Needed
     breakdown: {
-      Athletics: 6,
+      Athletics: 7,
       Badminton: 3.5,
       Carrom: 0,
       Chess: 5,
@@ -87,7 +87,7 @@ const teamsData = [
     name: "ME",
     totalPoints: 0, // Not Needed
     breakdown: {
-      Athletics: 1,
+      Athletics: 6,
       Badminton: 5,
       Carrom: 3,
       Chess: 3.5,
@@ -103,7 +103,7 @@ const teamsData = [
     name: "EE",
     totalPoints: 0, // Not Needed
     breakdown: {
-      Athletics: 0,
+      Athletics: 3,
       Badminton: 10,
       Carrom: 0,
       Chess: 10,
@@ -119,7 +119,7 @@ const teamsData = [
     name: "PG",
     totalPoints: 0, // Not Needed
     breakdown: {
-      Athletics: 11,
+      Athletics: 16,
       Badminton: 0,
       Carrom: 0,
       Chess: 8.5,

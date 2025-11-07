@@ -164,13 +164,13 @@ export const athleticsTripleJump = {
         headings: ['Position', 'Team', 'Points'],
         data: [
             ['1', 'CSE', '0'],
-            ['2', 'ECE', '0'],
+            ['2', 'ECE', '3'],
             ['3', 'EE', '0'],
             ['4', 'PIE+ECM', '0'],
-            ['5', 'CE', '0'],
+            ['5', 'CE', '1'],
             ['6', 'MME', '0'],
             ['7', 'ME', '0'],
-            ['8', 'PG', '0']
+            ['8', 'PG', '5']
         ]
     }
 };
