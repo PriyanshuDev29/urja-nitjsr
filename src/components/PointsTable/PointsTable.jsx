@@ -1,152 +1,129 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './PointsTable.css';
 import Footer from '../Footer/Footer.jsx';
-// NOTE: Ensure your actual data files are in place in your project's file system 
 
+/* ===============================================
+   CONFIG
+   =============================================== */
+
+// 🔴 REPLACE with your deployed Apps Script /exec URL:
+const ATH_API = "https://script.google.com/macros/s/AKfycbzmSjoHsaZO6fznE_lDOdL1wfFa3635T_tRIq5KTCaE9W0R7DON6fxKYbQfBRfRyP-w2g/exec";
+
+/* UI config for sports/genders/pools (events) */
 const sportsDataMap = {
-    'Athletics': {
+    Athletics: {
         genders: ['Boys', 'Girls'],
         pools: {
-            'Boys': ['100m', '200m', '400m', '800m', '1500m', 'Discus', '4x400m Relay', 'Cross Country', '3000m', 'Tug Of War', 'Triple Jump', 'Medley', 'Long Jump', 'High Jump', 'Shot Put', 'Javelin Throw', '4x100m Relay'],
-            'Girls': ['100m', '200m', '400m', '800m', '1500m', 'Discus', '4x400m Relay', 'Cross Country', '3000m', 'Tug Of War', 'Triple Jump', 'Medley', 'Long Jump', 'High Jump', 'Shot Put', 'Javelin Throw', '4x100m Relay']
+            Boys: ['100m', '200m', '400m', '800m', '1500m', 'Discus', '4x400m Relay', 'Cross Country', '3000m', 'Tug Of War', 'Triple Jump', 'Medley', 'Long Jump', 'High Jump', 'Shot Put', 'Javelin Throw', '4x100m Relay'],
+            Girls: ['100m', '200m', '400m', '800m', '1500m', 'Discus', '4x400m Relay', 'Cross Country', '3000m', 'Tug Of War', 'Triple Jump', 'Medley', 'Long Jump', 'High Jump', 'Shot Put', 'Javelin Throw', '4x100m Relay'],
         },
-        stages: ['Group Stage']
+        stages: ['Group Stage'],
     },
-    'Badminton': {
+    Badminton: {
         genders: ['Boys', 'Girls'],
-        pools: {
-            'Boys': ['Pool A', 'Pool B'],
-            'Girls': ['Pool A', 'Pool B']
-        },
-        stages: ['Group Stage', 'Knockout']
+        pools: { Boys: ['Pool A', 'Pool B'], Girls: ['Pool A', 'Pool B'] },
+        stages: ['Group Stage', 'Knockout'],
     },
-    'Chess': {
+    Chess: {
         genders: ['Boys', 'Girls'],
-        pools: {
-            'Boys': ['Pool A', 'Pool B'],
-            'Girls': ['Pool A', 'Pool B']
-        },
-        stages: ['Group Stage', 'Knockout']
+        pools: { Boys: ['Pool A', 'Pool B'], Girls: ['Pool A', 'Pool B'] },
+        stages: ['Group Stage', 'Knockout'],
     },
-    'Cricket': {
+    Cricket: {
         genders: ['Boys'],
-        pools: {
-            'Boys': ['Pool A', 'Pool B'],
-        },
-        stages: ['Group Stage', 'Knockout']
+        pools: { Boys: ['Pool A', 'Pool B'] },
+        stages: ['Group Stage', 'Knockout'],
     },
-    'Football': {
+    Football: {
         genders: ['Boys'],
-        pools: {
-            'Boys': ['Pool A', 'Pool B'],
-        },
-        stages: ['Group Stage', 'Knockout']
+        pools: { Boys: ['Pool A', 'Pool B'] },
+        stages: ['Group Stage', 'Knockout'],
     },
     'Lawn Tennis': {
         genders: ['Boys', 'Girls'],
-        pools: {
-            'Boys': ['Pool A'],
-            'Girls': ['Pool A', 'Pool B']
-        },
-        stages: ['Group Stage', 'Knockout']
+        pools: { Boys: ['Pool A'], Girls: ['Pool A', 'Pool B'] },
+        stages: ['Group Stage', 'Knockout'],
     },
     'Table Tennis': {
         genders: ['Boys', 'Girls'],
-        pools: {
-            'Boys': ['Pool A', 'Pool B'],
-            'Girls': ['Pool A', 'Pool B']
-        },
-        stages: ['Group Stage', 'Knockout']
+        pools: { Boys: ['Pool A', 'Pool B'], Girls: ['Pool A', 'Pool B'] },
+        stages: ['Group Stage', 'Knockout'],
     },
-    'Volleyball': {
+    Volleyball: {
         genders: ['Boys', 'Girls'],
-        pools: {
-            'Boys': ['Pool A', 'Pool B'],
-        },
-        stages: ['Group Stage', 'Knockout']
+        pools: { Boys: ['Pool A', 'Pool B'] },
+        stages: ['Group Stage', 'Knockout'],
     },
 };
 
+/* ===============================================
+   Helpers
+   =============================================== */
 
 const formatString = (str) => {
     if (!str) return '';
     return str
         .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
         .join(' ');
 };
+
+// Fetch athletics data for a given event + gender from Apps Script API
+async function fetchAthleticsEventPoints(eventName, gender) {
+    const url = `${ATH_API}?event=${encodeURIComponent(eventName)}&gender=${encodeURIComponent(gender)}`;
+    console.log(url)
+    const res = await fetch(url, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(`Athletics API HTTP ${res.status}`);
+    return await res.json(); // { pointsTable: { headings, data }, matches: [] }
+}
+
+/* ===============================================
+   Presentational components
+   =============================================== */
 
 function ScoreboardTable({ data }) {
     if (!data || !data.headings || !data.data) return null;
 
-    // Find the index of the 'Points' column for sorting
-    const pointsColumnIndex = data.headings.findIndex(heading =>
-        heading.toLowerCase().includes('pts') || heading.toLowerCase().includes('points')
+    const pointsColumnIndex = data.headings.findIndex(h =>
+        h.toLowerCase().includes('pts') || h.toLowerCase().includes('points')
+    );
+    const positionColumnIndex = data.headings.findIndex(h =>
+        h.toLowerCase().includes('position') || h.toLowerCase().includes('pos')
     );
 
-    // Find the index of the 'Position' column for overriding
-    const positionColumnIndex = data.headings.findIndex(heading =>
-        heading.toLowerCase().includes('position') || heading.toLowerCase().includes('pos')
-    );
-
-    // Sort the data array by Points (descending)
     const sortedData = [...data.data].sort((a, b) => {
         if (pointsColumnIndex !== -1) {
-            const pointsA = parseFloat(a[pointsColumnIndex]);
-            const pointsB = parseFloat(b[pointsColumnIndex]);
-
-            // Primary sort: Points (descending)
-            if (pointsB !== pointsA) {
-                return pointsB - pointsA;
-            }
-
-            // Secondary sort (Tie-breaker): Team Name
-            const teamA = a[1];
-            const teamB = b[1];
-
-            // CRITICAL CHECK: Ensure both team names exist and are strings before comparison
-            if (typeof teamA === 'string' && typeof teamB === 'string') {
-                return teamA.localeCompare(teamB);
-            }
-
-            // If team names are invalid (not strings), don't crash, just maintain current order (return 0)
+            const aP = Number(a[pointsColumnIndex]) || 0;
+            const bP = Number(b[pointsColumnIndex]) || 0;
+            if (bP !== aP) return bP - aP; // desc by points
+            const aT = a[1], bT = b[1];
+            if (typeof aT === 'string' && typeof bT === 'string') return aT.localeCompare(bT);
             return 0;
         }
         return 0;
     });
 
-    return (<>
+    return (
         <div className="scoreboard-table-container">
             <table>
                 <thead>
                     <tr>
-                        {data.headings.map((heading, index) => (
-                            <th key={index}>{heading}</th>
-                        ))}
+                        {data.headings.map((h, i) => <th key={i}>{h}</th>)}
                     </tr>
                 </thead>
                 <tbody>
-                    {sortedData.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                            {row.map((cell, cellIndex) => {
-                                let displayCell = cell;
-
-                                // FIX: Override the Position column with the calculated rank
-                                if (cellIndex === positionColumnIndex) {
-                                    displayCell = rowIndex + 1;
-                                }
-
-                                return (
-                                    <td key={cellIndex}>{displayCell}</td>
-                                );
+                    {sortedData.map((row, rIdx) => (
+                        <tr key={rIdx}>
+                            {row.map((cell, cIdx) => {
+                                let out = cell;
+                                if (cIdx === positionColumnIndex) out = rIdx + 1; // display rank
+                                return <td key={cIdx}>{out}</td>;
                             })}
                         </tr>
                     ))}
                 </tbody>
             </table>
         </div>
-
-    </>
     );
 }
 
@@ -155,27 +132,17 @@ function MatchesList({ matches }) {
     return (
         <div className="matches-list-container">
             <h3>Matches</h3>
-            {matches.map((match, index) => (
-                <div className="match-card" key={index}>
-                    <p className="match-date">{match.date} | {match.time}</p>
+            {matches.map((m, i) => (
+                <div className="match-card" key={i}>
+                    <p className="match-date">{m.date} | {m.time}</p>
                     <div className="match-details">
-                        <div className="match-team team1">
-                            <span>{match.teams[0]}</span>
-                        </div>
+                        <div className="match-team team1"><span>{m.teams[0]}</span></div>
                         <div className="match-score">
-                            {match.scores.length > 1 ? (
-                                <p>{match.scores[0]} - {match.scores[1]}</p>
-                            ) : (
-                                <p>{match.scores[0]}</p>
-                            )}
+                            {m.scores.length > 1 ? <p>{m.scores[0]} - {m.scores[1]}</p> : <p>{m.scores[0]}</p>}
                         </div>
-                        {match.teams.length > 1 && (
-                            <div className="match-team team2">
-                                <span>{match.teams[1]}</span>
-                            </div>
-                        )}
+                        {m.teams.length > 1 && <div className="match-team team2"><span>{m.teams[1]}</span></div>}
                     </div>
-                    <p className="match-venue">Venue: {match.venue}</p>
+                    <p className="match-venue">Venue: {m.venue}</p>
                 </div>
             ))}
         </div>
@@ -184,41 +151,36 @@ function MatchesList({ matches }) {
 
 function Dropdown({ label, options, value, onChange }) {
     const [isOpen, setIsOpen] = useState(false);
-    const dropdownRef = useRef(null);
+    const ref = useRef(null);
+    const toggleOpen = () => setIsOpen(v => !v);
 
-    const toggleOpen = () => setIsOpen(!isOpen);
-
-    const handleOptionClick = (option) => {
-        onChange({ target: { value: option } });
+    const handleOptionClick = (opt) => {
+        onChange({ target: { value: opt } });
         setIsOpen(false);
     };
 
     useEffect(() => {
-        function handleClickOutside(event) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+        const clickOutside = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) setIsOpen(false);
         };
-    }, [dropdownRef]);
+        document.addEventListener('mousedown', clickOutside);
+        return () => document.removeEventListener('mousedown', clickOutside);
+    }, []);
 
-    const displayValue = value ? formatString(value) : (options.length > 0 ? formatString(options[0]) : label);
+    const display = value ? formatString(value) : (options[0] ? formatString(options[0]) : label);
 
     return (
-        <div className={`dropdown-wrapper ${isOpen ? 'active-dropdown' : ''}`} ref={dropdownRef}>
+        <div className={`dropdown-wrapper ${isOpen ? 'active-dropdown' : ''}`} ref={ref}>
             <label>{label}:</label>
             <div className={`custom-dropdown-button ${isOpen ? 'open' : ''}`} onClick={toggleOpen}>
-                {displayValue}
+                {display}
                 <span className="dropdown-arrow"></span>
             </div>
             {isOpen && (
                 <ul className="dropdown-menu">
-                    {options.map((option) => (
-                        <li key={option} onClick={() => handleOptionClick(option)} className={option === value ? 'selected' : ''}>
-                            {formatString(option)}
+                    {options.map((opt) => (
+                        <li key={opt} onClick={() => handleOptionClick(opt)} className={opt === value ? 'selected' : ''}>
+                            {formatString(opt)}
                         </li>
                     ))}
                 </ul>
@@ -232,126 +194,71 @@ function KnockoutBracket({ data }) {
         return <p className="no-data-message">No knockout bracket data available for this selection.</p>;
     }
 
-    const semiFinals = data.rounds.find(round => round.name === "Semi-finals");
-    const hasSemiFinals = semiFinals && semiFinals.matches && semiFinals.matches.length > 0;
-
-    const finalRound = data.rounds.find(round => round.name === "Final");
-    const finalMatch = finalRound?.matches[0]; // Assuming only one final match
+    const semi = data.rounds.find((r) => r.name === 'Semi-finals');
+    const hasSemi = !!(semi && semi.matches && semi.matches.length);
+    const finalRound = data.rounds.find((r) => r.name === 'Final');
+    const finalMatch = finalRound?.matches?.[0];
     const thirdPlaceMatch = data.thirdPlace?.match;
 
-    // --- Dynamic Winner Determination Logic ---
     let winnerTeam = 'TBD';
-
     if (finalMatch) {
-        // 1. Check for explicit winner tag
-        if (finalMatch.winner && finalMatch.winner !== 'TBD' && finalMatch.winner !== '') {
+        if (finalMatch.winner && finalMatch.winner !== 'TBD') {
             winnerTeam = finalMatch.winner;
+        } else if (finalMatch.score1 !== '' && finalMatch.score2 !== '') {
+            const s1 = parseInt(finalMatch.score1, 10);
+            const s2 = parseInt(finalMatch.score2, 10);
+            if (s1 > s2) winnerTeam = finalMatch.team1;
+            else if (s2 > s1) winnerTeam = finalMatch.team2;
         }
-        // 2. Fallback: Determine winner based on score comparison
-        else if (finalMatch.score1 !== '' && finalMatch.score2 !== '') {
-            const score1 = parseInt(finalMatch.score1, 10);
-            const score2 = parseInt(finalMatch.score2, 10);
-
-            if (score1 > score2) {
-                winnerTeam = finalMatch.team1;
-            } else if (score2 > score1) {
-                winnerTeam = finalMatch.team2;
-            }
-        }
-        // If scores are blank or match is TBD, it remains 'TBD'
     }
-    // --- End Dynamic Winner Determination ---
-
 
     return (
         <div className="knockout-bracket-container complex-flow">
-
             <div className="bracket-main-flow">
-
-                {/* 1. Semi-finals Column (Conditional) */}
-                {hasSemiFinals && (
+                {hasSemi && (
                     <div className="bracket-round semi-finals-round">
                         <h3 className="round-heading semi-finals-heading">SEMI-FINALS</h3>
                         <div className="round-matches">
-                            {semiFinals.matches.map((match) => (
-                                <div key={match.id} className="bracket-match semi-final-match">
-                                    <p className="match-info">{match.date} - {match.venue}</p>
-
-                                    {match.team1 && (
-                                        <div className="bracket-team">
-                                            <span className="team-name">{match.team1}</span>
-                                            <span className="team-score score-top">{match.score1}</span>
-                                        </div>
-                                    )}
-
-                                    {match.team2 && (
-                                        <div className="bracket-team">
-                                            <span className="team-name">{match.team2}</span>
-                                            <span className="team-score score-bottom">{match.score2}</span>
-                                        </div>
-                                    )}
+                            {semi.matches.map((m) => (
+                                <div key={m.id} className="bracket-match semi-final-match">
+                                    <p className="match-info">{m.date} - {m.venue}</p>
+                                    {m.team1 && (<div className="bracket-team"><span className="team-name">{m.team1}</span><span className="team-score score-top">{m.score1}</span></div>)}
+                                    {m.team2 && (<div className="bracket-team"><span className="team-name">{m.team2}</span><span className="team-score score-bottom">{m.score2}</span></div>)}
                                 </div>
                             ))}
                         </div>
                     </div>
                 )}
 
-
-                {/* 2. Finals and Third Place Column (Combined) */}
                 <div className="bracket-round final-stage-column">
-
-                    {/* Final Match Block */}
                     {finalMatch && (
                         <div className="final-match-block">
                             <h3 className="round-heading final-heading">FINAL</h3>
                             <div key={finalMatch.id} className="bracket-match final-match">
                                 <p className="match-info">{finalMatch.date} - {finalMatch.venue}</p>
-                                {finalMatch.team1 && (
-                                    <div className="bracket-team">
-                                        <span className="team-name">{finalMatch.team1}</span>
-                                        <span className="team-score score-top">{finalMatch.score1}</span>
-                                    </div>
-                                )}
-                                {finalMatch.team2 && (
-                                    <div className="bracket-team">
-                                        <span className="team-name">{finalMatch.team2}</span>
-                                        <span className="team-score score-bottom">{finalMatch.score2}</span>
-                                    </div>
-                                )}
+                                {finalMatch.team1 && (<div className="bracket-team"><span className="team-name">{finalMatch.team1}</span><span className="team-score score-top">{finalMatch.score1}</span></div>)}
+                                {finalMatch.team2 && (<div className="bracket-team"><span className="team-name">{finalMatch.team2}</span><span className="team-score score-bottom">{finalMatch.score2}</span></div>)}
                             </div>
                         </div>
                     )}
 
-                    {/* Third Place Match Block */}
                     {thirdPlaceMatch && (
                         <div className="third-place-match-block">
                             <h3 className="round-heading third-place-heading">THIRD PLACE</h3>
                             <div className="bracket-match third-place-match">
                                 <p className="match-info">{thirdPlaceMatch.date} - {thirdPlaceMatch.venue}</p>
-                                {thirdPlaceMatch.team1 && (
-                                    <div className="bracket-team">
-                                        <span className="team-name">{thirdPlaceMatch.team1}</span>
-                                        <span className="team-score score-top">{thirdPlaceMatch.score1}</span>
-                                    </div>
-                                )}
-                                {thirdPlaceMatch.team2 && (
-                                    <div className="bracket-team">
-                                        <span className="team-name">{thirdPlaceMatch.team2}</span>
-                                        <span className="team-score score-bottom">{thirdPlaceMatch.score2}</span>
-                                    </div>
-                                )}
+                                {thirdPlaceMatch.team1 && (<div className="bracket-team"><span className="team-name">{thirdPlaceMatch.team1}</span><span className="team-score score-top">{thirdPlaceMatch.score1}</span></div>)}
+                                {thirdPlaceMatch.team2 && (<div className="bracket-team"><span className="team-name">{thirdPlaceMatch.team2}</span><span className="team-score score-bottom">{thirdPlaceMatch.score2}</span></div>)}
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* 3. Champions Column */}
                 {finalMatch && (
                     <div className="bracket-round winner-column">
                         <h3 className="round-heading">CHAMPIONS</h3>
                         <div className="winner-box">
                             <div className="winner-content">
-                                {/* Displays TBD or the determined winner name */}
                                 <span className="winner-team-name">{winnerTeam}</span>
                             </div>
                         </div>
@@ -362,18 +269,20 @@ function KnockoutBracket({ data }) {
     );
 }
 
+/* ===============================================
+   Main component
+   =============================================== */
 
 function PointsTable() {
     const [selectedSport, setSelectedSport] = useState('Athletics');
     const [selectedGender, setSelectedGender] = useState('Boys');
-    const [selectedPool, setSelectedPool] = useState('100m');
+    const [selectedPool, setSelectedPool] = useState('100m'); // for Athletics: event
     const [selectedStage, setSelectedStage] = useState('Group Stage');
     const [currentData, setCurrentData] = useState(null);
 
     const [isMobileSportDropdownOpen, setIsMobileSportDropdownOpen] = useState(false);
     const mobileDropdownRef = useRef(null);
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
+    const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : true);
 
     const sportsList = [
         { name: 'Athletics', emoji: '🏃' },
@@ -381,20 +290,18 @@ function PointsTable() {
         { name: 'Chess', emoji: '♟️' },
         { name: 'Cricket', emoji: '🏏' },
         { name: 'Football', emoji: '⚽' },
-
         { name: 'Lawn Tennis', emoji: '🎾' },
         { name: 'Table Tennis', emoji: '🏓' },
-        { name: 'Volleyball', emoji: '🏐' }
+        { name: 'Volleyball', emoji: '🏐' },
     ];
 
-    // Effect to handle dynamic pool selection when sport/gender/stage changes
+    // Keep pool (event) valid whenever selections change
     useEffect(() => {
-        const poolsForCurrentGender = sportsDataMap[selectedSport]?.pools[selectedGender] || [];
-
+        const poolsForGender = sportsDataMap[selectedSport]?.pools[selectedGender] || [];
         if (selectedStage === 'Group Stage') {
-            if (poolsForCurrentGender.length > 0 && !poolsForCurrentGender.includes(selectedPool)) {
-                setSelectedPool(poolsForCurrentGender[0]);
-            } else if (poolsForCurrentGender.length === 0) {
+            if (poolsForGender.length > 0 && !poolsForGender.includes(selectedPool)) {
+                setSelectedPool(poolsForGender[0]);
+            } else if (poolsForGender.length === 0) {
                 setSelectedPool('');
             }
         } else if (selectedStage === 'Knockout') {
@@ -402,8 +309,7 @@ function PointsTable() {
         }
     }, [selectedSport, selectedGender, selectedStage, selectedPool]);
 
-
-    // Effect to import the data based on current selections
+    // Load data for current selection
     useEffect(() => {
         const importData = async () => {
             setCurrentData(null);
@@ -415,25 +321,26 @@ function PointsTable() {
             try {
                 const sportFolderPath = selectedSport.toLowerCase().replace(' ', '-');
                 const genderFolderPath = selectedGender.toLowerCase().replace(' ', '-');
+
+                if (selectedSport === 'Athletics') {
+                    // LIVE fetch from the Apps Script API
+                    const live = await fetchAthleticsEventPoints(selectedPool, selectedGender);
+                    setCurrentData(live);
+                    return;
+                }
+
+                // Non-athletics: dynamic import from your local files
                 let module = null;
                 let dataKey = '';
 
-                if (selectedSport === 'Athletics') {
-                    module = await import(`./sports/${sportFolderPath}/${genderFolderPath}/events.jsx`).catch(e => {
-                        console.error("Athletics import failed:", e);
-                        return null;
-                    });
-                    const eventKey = 'athletics' + selectedPool.replace(/\s+/g, '').replace('m', 'm');
-                    dataKey = eventKey;
-                } else if (selectedStage === 'Group Stage') {
+                if (selectedStage === 'Group Stage') {
                     const poolFolderPath = selectedPool.toLowerCase().replace(' ', '-');
                     module = await import(`./sports/${sportFolderPath}/${genderFolderPath}/${poolFolderPath}.jsx`).catch(e => {
                         console.error("Group Stage import failed:", e);
                         return null;
                     });
                     dataKey = module ? Object.keys(module)[0] : '';
-                } else { // Knockout Stage
-                    // NOTE: Assuming tableTennis data will be imported here based on your file path comment
+                } else {
                     module = await import(`./sports/${sportFolderPath}/${genderFolderPath}/knockout.jsx`).catch(e => {
                         console.error("Knockout import failed:", e);
                         return null;
@@ -441,17 +348,14 @@ function PointsTable() {
                     dataKey = module ? Object.keys(module)[0] : '';
                 }
 
-                // Final check: If the module loaded AND the expected key exists
                 if (module && module[dataKey]) {
                     setCurrentData(module[dataKey]);
                 } else {
                     console.warn(`Data not found or key ${dataKey} missing for ${selectedSport}.`);
                     setCurrentData(null);
                 }
-
-            } catch (error) {
-                // This top-level catch is for any synchronous errors or unexpected promise rejections.
-                console.error(`Unexpected crash during data import for ${selectedSport}:`, error);
+            } catch (err) {
+                console.error(`Unexpected crash during data import for ${selectedSport}:`, err);
                 setCurrentData(null);
             }
         };
@@ -459,18 +363,16 @@ function PointsTable() {
         importData();
     }, [selectedSport, selectedGender, selectedPool, selectedStage]);
 
-    // Effect to handle resize and close dropdown on outside click
+    // Resize + outside click for mobile dropdown
     useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768);
-        };
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
         window.addEventListener('resize', handleResize);
 
-        function handleClickOutside(event) {
-            if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target)) {
+        const handleClickOutside = (e) => {
+            if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(e.target)) {
                 setIsMobileSportDropdownOpen(false);
             }
-        }
+        };
         document.addEventListener('mousedown', handleClickOutside);
 
         return () => {
@@ -479,10 +381,9 @@ function PointsTable() {
         };
     }, []);
 
-    // --- Handler Functions ---
-
-    const handleSportChange = (event) => {
-        const newSport = event.target.value;
+    // Handlers
+    const handleSportChange = (e) => {
+        const newSport = e.target.value;
         setSelectedSport(newSport);
         setIsMobileSportDropdownOpen(false);
 
@@ -490,147 +391,114 @@ function PointsTable() {
         const newGender = genders.length > 0 ? genders[0] : selectedGender;
         setSelectedGender(newGender);
 
-        // FIX: Explicitly reset Pool/Event to the first valid one for the new sport
         const pools = sportsDataMap[newSport]?.pools[newGender] || [];
         setSelectedPool(pools.length > 0 ? pools[0] : '');
 
-        // FIX: Explicitly reset Stage
         const stages = sportsDataMap[newSport]?.stages || [];
         setSelectedStage(stages.length > 0 ? stages[0] : 'Group Stage');
     };
+    const handleGenderChange = (e) => setSelectedGender(e.target.value);
+    const handlePoolChange = (e) => setSelectedPool(e.target.value);
+    const handleStageChange = (e) => setSelectedStage(e.target.value);
+    const toggleMobileSportDropdown = () => setIsMobileSportDropdownOpen(v => !v);
 
-    const handleGenderChange = (event) => {
-        const newGender = event.target.value;
-        setSelectedGender(newGender);
-    };
-
-    const handlePoolChange = (event) => {
-        setSelectedPool(event.target.value);
-    };
-
-    const handleStageChange = (event) => {
-        setSelectedStage(event.target.value);
-    };
-
-    const toggleMobileSportDropdown = () => {
-        setIsMobileSportDropdownOpen(!isMobileSportDropdownOpen);
-    }
-
-    // Helper function to render the mobile dropdown's selected value (with emoji)
     const renderSelectedSport = () => {
         const sport = sportsList.find(s => s.name === selectedSport);
         return sport ? `${sport.emoji} ${sport.name}` : selectedSport;
-    }
-
+    };
 
     const genders = sportsDataMap[selectedSport]?.genders || [];
     const pools = sportsDataMap[selectedSport]?.pools[selectedGender] || [];
     const stages = sportsDataMap[selectedSport]?.stages || [];
 
-    // --- JSX Render ---
+    return (
+        <>
+            <div className="points-table-page">
+                <h1 className="main-points-heading">Points Table</h1>
 
-    return (<>
-        <div className="points-table-page">
-            <h1 className="main-points-heading">Points Table</h1>
-
-            {/* MOBILE SPORT DROPDOWN (Shown when isMobile is true) */}
-            {isMobile && (
-                <div className="sports-mobile-dropdown-nav" ref={mobileDropdownRef}>
-                    <div
-                        className={`custom-dropdown-button ${isMobileSportDropdownOpen ? 'open' : ''}`}
-                        onClick={toggleMobileSportDropdown}
-                    >
-                        {renderSelectedSport()}
-                        <span className="dropdown-arrow"></span>
+                {/* Mobile sport dropdown */}
+                {isMobile && (
+                    <div className="sports-mobile-dropdown-nav" ref={mobileDropdownRef}>
+                        <div className={`custom-dropdown-button ${isMobileSportDropdownOpen ? 'open' : ''}`} onClick={toggleMobileSportDropdown}>
+                            {renderSelectedSport()}
+                            <span className="dropdown-arrow"></span>
+                        </div>
+                        {isMobileSportDropdownOpen && (
+                            <ul className="dropdown-menu">
+                                {sportsList.map((sport) => (
+                                    <li
+                                        key={sport.name}
+                                        onClick={() => handleSportChange({ target: { value: sport.name } })}
+                                        className={sport.name === selectedSport ? 'selected' : ''}
+                                    >
+                                        {sport.emoji} {sport.name}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
-                    {isMobileSportDropdownOpen && (
-                        <ul className="dropdown-menu">
-                            {sportsList.map((sport) => (
-                                <li
-                                    key={sport.name}
-                                    onClick={() => handleSportChange({ target: { value: sport.name } })}
-                                    className={sport.name === selectedSport ? 'selected' : ''}
-                                >
-                                    {sport.emoji} {sport.name}
-                                </li>
-                            ))}
-                        </ul>
+                )}
+
+                {/* Desktop radio group */}
+                {!isMobile && (
+                    <div className="sports-radio-container">
+                        {sportsList.map((sport) => (
+                            <label key={sport.name} className="sport-radio-label">
+                                <input
+                                    type="radio"
+                                    name="sport"
+                                    value={sport.name}
+                                    checked={selectedSport === sport.name}
+                                    onChange={handleSportChange}
+                                    className="sport-radio-input"
+                                />
+                                <span className="sport-radio-text">
+                                    <span className="sport-emoji">{sport.emoji}</span>
+                                    {sport.name}
+                                </span>
+                            </label>
+                        ))}
+                    </div>
+                )}
+
+                <div className="dropdowns-container">
+                    {genders.length > 0 && (
+                        <Dropdown label="Gender" options={genders} value={selectedGender} onChange={handleGenderChange} />
+                    )}
+                    {stages.length > 0 && selectedSport !== 'Athletics' && (
+                        <Dropdown label="Stage" options={stages} value={selectedStage} onChange={handleStageChange} />
+                    )}
+                    {((selectedStage === 'Group Stage' && selectedSport !== 'Athletics') || selectedSport === 'Athletics') && pools.length > 0 && (
+                        <Dropdown label={selectedSport === 'Athletics' ? 'Event' : 'Pool'} options={pools} value={selectedPool} onChange={handlePoolChange} />
                     )}
                 </div>
-            )}
 
-            {/* RADIO BUTTONS (Shown when isMobile is false) */}
-            {!isMobile && (
-                <div className="sports-radio-container">
-                    {sportsList.map((sport) => (
-                        <label key={sport.name} className="sport-radio-label">
-                            <input
-                                type="radio"
-                                name="sport"
-                                value={sport.name}
-                                checked={selectedSport === sport.name}
-                                onChange={handleSportChange}
-                                className="sport-radio-input"
-                            />
-                            <span className="sport-radio-text">
-                                <span className="sport-emoji">{sport.emoji}</span>
-                                {sport.name}
-                            </span>
-                        </label>
-                    ))}
+                <div className="scoreboard-container">
+                    {currentData ? (
+                        <>
+                            <h2>
+                                {selectedSport} - {formatString(selectedGender)} |{' '}
+                                {selectedSport === 'Athletics'
+                                    ? formatString(selectedPool)
+                                    : selectedStage === 'Group Stage'
+                                        ? formatString(selectedPool)
+                                        : formatString(selectedStage)}
+                            </h2>
+                            {selectedStage === 'Group Stage' ? (
+                                <>
+                                    <ScoreboardTable data={currentData.pointsTable} />
+                                    <MatchesList matches={currentData.matches} />
+                                </>
+                            ) : (
+                                <KnockoutBracket data={currentData} />
+                            )}
+                        </>
+                    ) : (
+                        <p className="no-data-message">Loading Data...</p>
+                    )}
                 </div>
-            )}
-
-            <div className="dropdowns-container">
-                {genders.length > 0 && (
-                    <Dropdown
-                        label="Gender"
-                        options={genders}
-                        value={selectedGender}
-                        onChange={handleGenderChange}
-                    />
-                )}
-                {stages.length > 0 && selectedSport !== 'Athletics' && (
-                    <Dropdown
-                        label="Stage"
-                        options={stages}
-                        value={selectedStage}
-                        onChange={handleStageChange}
-                    />
-                )}
-                {((selectedStage === 'Group Stage' && selectedSport !== 'Athletics') || selectedSport === 'Athletics') && pools.length > 0 && (
-                    <Dropdown
-                        label={selectedSport === 'Athletics' ? "Event" : "Pool"}
-                        options={pools}
-                        value={selectedPool}
-                        onChange={handlePoolChange}
-                    />
-                )}
             </div>
-
-            <div className="scoreboard-container">
-                {currentData ? (
-                    <>
-                        <h2>
-                            {selectedSport} - {formatString(selectedGender)} |&nbsp;
-                            {selectedSport === 'Athletics' ? formatString(selectedPool) :
-                                selectedStage === 'Group Stage' ? formatString(selectedPool) : formatString(selectedStage)}
-                        </h2>
-                        {selectedStage === 'Group Stage' ? (
-                            <>
-                                <ScoreboardTable data={currentData.pointsTable} />
-                                <MatchesList matches={currentData.matches} />
-                            </>
-                        ) : (
-                            <KnockoutBracket data={currentData} />
-                        )}
-                    </>
-                ) : (
-                    <p className="no-data-message">No data available for this selection. Make sure the corresponding data file exists.</p>
-                )}
-            </div>
-        </div>
-        <Footer/>
+            <Footer />
         </>
     );
 }
