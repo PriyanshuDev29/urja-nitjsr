@@ -8,7 +8,7 @@ const teamsData = [
     totalPoints: 0, // Not Needed
     breakdown: {
       Athletics: 0,
-      Badminton: 0,
+      Badminton: 5,
       Carrom: 0,
       Chess: 0,
       Cricket: 0,
@@ -40,7 +40,7 @@ const teamsData = [
     totalPoints: 0, // Not Needed
     breakdown: {
       Athletics: 0,
-      Badminton: 7,
+      Badminton: 10.5,
       Carrom: 0,
       Chess: 5,
       Cricket: 10,
@@ -56,7 +56,7 @@ const teamsData = [
     totalPoints: 0, // Not Needed
     breakdown: {
       Athletics: 0,
-      Badminton: 0,
+      Badminton: 5,
       Carrom: 0,
       Chess: 0,
       Cricket: 0,
@@ -72,7 +72,7 @@ const teamsData = [
     totalPoints: 0, // Not Needed
     breakdown: {
       Athletics: 0,
-      Badminton: 0,
+      Badminton: 3.5,
       Carrom: 0,
       Chess: 5,
       Cricket: 5,

@@ -1,21 +1,27 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Redirecting...</title>
-    <script>
-      // Preserve path and query on redirect
-      const path = window.location.pathname;
-      const search = window.location.search;
-      const hash = window.location.hash;
-      sessionStorage.redirect = path + search + hash;
-      window.location.href = "/";
-    </script>
-  </head>
 
-  <body>
-    <noscript>Redirecting...</noscript>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/assets/urja-favicon-BjHRadGU.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Urja 26</title>
+  <script type="module" crossorigin src="/assets/index-Ck0mfzaG.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Daw_baeo.css">
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script>
+    // Handle client-side redirect from 404.html
+    if (sessionStorage.redirect) {
+      const redirect = sessionStorage.redirect;
+      delete sessionStorage.redirect;
+      window.history.replaceState(null, null, redirect);
+    }
+  </script>
+
+</body>
+
 </html>
