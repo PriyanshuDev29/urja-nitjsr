@@ -71,7 +71,7 @@ export const MANAGERS = [
     id: 8,
     name: "Aditya Raj",
     role: "Frontend Developer",
-    regNo: "2024UGCS011",
+    regNo: "2024UGCS012",
     phone: "",
     photo: "/gallery/adityaRaj.jpg",
     group: "Contributors"
