@@ -234,3 +234,32 @@
     width: 220px;
   }
 }
+
+/* ===== Contributors specific layout: first row 3 cards, second row 2 cards centered ===== */
+.mgr-group[data-group="contributors"] .mgr-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* centers the last row with 2 items */
+  gap: 30px;
+  max-width: 860px; /* ensure 3 cards (3*260 + gaps) fit on one row on wider screens */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mgr-group[data-group="contributors"] .mgr-card {
+  /* keep the same compact width so 3 fit on first row */
+  width: 260px;
+  margin: 0; /* cards handled by flex gap / centering */
+}
+
+@media (max-width: 900px) {
+  .mgr-group[data-group="contributors"] .mgr-card {
+    width: 240px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mgr-group[data-group="contributors"] .mgr-card {
+    width: 220px;
+  }
+}

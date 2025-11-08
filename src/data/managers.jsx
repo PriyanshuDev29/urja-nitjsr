@@ -51,7 +51,7 @@ export const MANAGERS = [
   },
   {
     id: 6,
-    name: "Swayam Kumar",
+    name: "Swayam Agarwal",
     role: "Frontend Developer",
     regNo: "2024UGCS066",
     phone: "",
@@ -67,22 +67,22 @@ export const MANAGERS = [
     photo: "/gallery/rishav.jpg",
     group: "Contributors"
   },
-  // {
-  //   id: 8,
-  //   name: "Aditya Raj",
-  //   role: "Frontend Developer",
-  //   regNo: "2024UGCS055",
-  //   phone: "",
-  //   photo: "/gallery/adityaRaj.jpg",
-  //   group: "Contributors"
-  // },
-  // {
-  //   id: 9,
-  //   name: "Aditya Prakash",
-  //   role: "Frontend Developer",
-  //   regNo: "2024UGCS055",
-  //   phone: "",
-  //   photo: "/gallery/adityaPrakash.jpg",
-  //   group: "Contributors"
-  // }
+  {
+    id: 8,
+    name: "Aditya Raj",
+    role: "Frontend Developer",
+    regNo: "2024UGCS011",
+    phone: "",
+    photo: "/gallery/adityaRaj.jpg",
+    group: "Contributors"
+  },
+  {
+    id: 9,
+    name: "Aditya Prakash",
+    role: "Frontend Developer",
+    regNo: "2024UGCS102",
+    phone: "",
+    photo: "/gallery/adityaPrakash.jpg",
+    group: "Contributors"
+  }
 ];

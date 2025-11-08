@@ -72,8 +72,11 @@ export default function Managers() {
             const items = groups[groupName];
             if (!items || items.length === 0) return null;
 
+            // add a data-group attribute so CSS can target specific groups
+            const dataGroup = groupName.toLowerCase().replace(/\s+/g, "-");
+
             return (
-              <div key={groupName} className="mgr-group">
+              <div key={groupName} className="mgr-group" data-group={dataGroup}>
                 <h3 className="mgr-group-title">{groupName}</h3>
                 <div className="mgr-grid">
                   {items.map((m) => (
